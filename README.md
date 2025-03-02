@@ -33,6 +33,16 @@ Computing the integral... : 100%|#############| 93637/93637 [00:02<00:00, 40238.
 
 More datailed explanation is provided within the function docstrings.
 
+## monte_carlo_integration
+
+Straight-forward implementation of MCI. The goal is to demonstrate all the steps of MCI
+from taking an arbitrary density function, validating it over the domain, sampling points,
+finding MC estimator and comparing to the Newton's-Côtes result.
+
+Visualization and animation are also possible.
+
+Example
+
 ## Common dependecies
 
 - python=3.12.2

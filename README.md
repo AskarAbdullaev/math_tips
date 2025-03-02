@@ -37,6 +37,8 @@ More datailed explanation is provided within the function docstrings.
 
 - python=3.12.2
 - numpy=1.26.4
+- scipy=1.13.1
+- pandas=2.2.2
 - matplotlib=3.8.4
 - tqdm=4.66.4
 - sympy=1.13.3

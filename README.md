@@ -1,6 +1,6 @@
 # math_tips
 
-Some math functions which I found interesting to implement. Mostly about Calculus.
+Some math functions which I found interesting to implement. Mostly about Calculus and Optimization.
 
 ## double_integral
 

@@ -97,11 +97,12 @@ def mci(function: Callable,
     if verbose:
         function_code = inspect.getsource(function).replace('\n', '').replace('return', '')
         function_code = ''.join(function_code.split(':')[1:])
-        print(f'\nIntegrand: {function_code}')
+        print('Task:')
+        print('Integrand:'.ljust(30), re.sub(r' {1,100}', ' ', function_code))
         pdf_code = inspect.getsource(pdf).replace('\n', '').replace('return', '')
         pdf_code = ''.join(pdf_code.split(':')[1:])
-        print(f'Raw PDF: {pdf_code}')
-        print(f'PDF validation required: {validate_pdf}')
+        print('Raw PDF:'.ljust(30) + re.sub(r' {1,100}', ' ', pdf_code))
+        print('PDF validation required:'.ljust(30) + str(validate_pdf))
         if sampling_function:
             try:
                 sampler_code = inspect.getsource(sampling_function).replace('\n', '').replace('return', '')
@@ -110,19 +111,21 @@ def mci(function: Callable,
                 sampler_code = 'Provided'
         else:
             sampler_code = 'Not Provided'
-        print(f'Sampling function provided: {sampler_code}')
-        print(f'Number of variables: {n_vars}')
-        print(f'Boundaries of integration: ' + ', '.join([f'[{b[0]}, {b[1]}]' for b in domain]))
-        print(f'Infinite domain: {infinite_domain}')
-        print(f'Number of samples: {n_samples}')
-        print(f'Plotting option: {plot}\n')
+        print('Sampling function provided:'.ljust(30) + re.sub(r' {1,100}', ' ', sampler_code))
+        print('Number of variables:'.ljust(30) + str(n_vars))
+        print('Boundaries of integration:'.ljust(30) + ', '.join([f'[{b[0]}, {b[1]}]' for b in domain]))
+        print('Infinite domain:'.ljust(30) + str(infinite_domain))
+        print('Number of samples:'.ljust(30) + str(n_samples))
+        print('Plotting option:'.ljust(30) + str(plot))
+        print('Animation:'.ljust(30) + str(animation) + '\n')
+
 
     #####################################
     # Checking if PDF is valid
     #####################################
     if validate_pdf:
         if verbose:
-            print('Checking PDF')
+            print('Checking PDF:')
 
         # Finding the infinum of PDF: if infinum is smaller than 0, PDF will be increased by the necessary value 
         # to sure that it is non-negative over the domain
@@ -135,9 +138,10 @@ def mci(function: Callable,
                             method="trust-constr", bounds=domain)
         pdf_min = min(pdf_min, pdf(*pdf_min_.x))
         if verbose:
-            print(f'PDF minimum = {pdf_min}')
+            print('PDF minimum:'.ljust(30) + str(pdf_min))
         if pdf_min < 0 and verbose:
-            print(f'PDF reaches negative value {pdf_min:.3g}, it will be adjusted by {-pdf_min:.3g}')
+            print('PDF reaches negative value:'.ljust(30) + f'{pdf_min:.3g}'), 
+            print('  it will be adjusted by:'.ljust(30) + f'{-pdf_min:.3g}')
 
         # Additional 'volume' to add to the PDF integral
         pdf_min = np.min([0, pdf_min])
@@ -153,8 +157,8 @@ def mci(function: Callable,
             raise ValueError('PDF is divergent over the domain')
         if not np.isclose(pdf_integral, 1.0, rtol=1e-8):
             if verbose:
-                print(f'PDF does not integrate to 1 over the domain (result = {pdf_integral:.3g}), '
-                    f'it will be multiplied by {1/pdf_integral:.3g}')
+                print('PDF integrates to:'.ljust(30) + f'{pdf_integral:.3g}')
+                print('  it will be multiplied by:'.ljust(30) + f'{1/pdf_integral:.3g}')
             pdf_adjusted = lambda x: (pdf(*x) - pdf_min) / pdf_integral
         else:
             pdf_adjusted = lambda x: pdf(*x) - pdf_min
@@ -173,7 +177,7 @@ def mci(function: Callable,
         # Defining the propasal distribution q(x) for rejection sampling: uniform for finite domain / broad normal for infinite domain
         if infinite_domain:
             if verbose:
-                print('As domain is infinite, normal distribution is used as a proposal (q(x))')
+                print('Proposal (q(x)):'.ljust(30) + 'normal')
             pseudo_domain = [(bounds[0] if bounds[0] > -np.inf else 0, bounds[1] if bounds[1] < np.inf else 20) for bounds in domain]
             pseudo_min1 = minimize(lambda x: pdf_adjusted(x), x0=np.array([b[1] for b in pseudo_domain]), method="Nelder-Mead", bounds=pseudo_domain)
             pseudo_min2 = minimize(lambda x: pdf_adjusted(x), x0=np.array([b[0] for b in pseudo_domain]), method="Nelder-Mead", bounds=pseudo_domain)
@@ -187,7 +191,7 @@ def mci(function: Callable,
             q_sample = lambda: np.random.normal(0, 100 / s)
         else:
             if verbose:
-                print('As domain is finite, uniform distribution is used as a proposal (q(x))')
+                print('Proposal (q(x)):'.ljust(30) + 'uniform')
             q = lambda x: 1
             q_sample = lambda a, b: np.random.uniform(a, b)
 
@@ -196,7 +200,7 @@ def mci(function: Callable,
         M = M.x.tolist()
         M = pdf_adjusted(M) / q(M)
         if verbose:
-            print(f'p(x) / q(x) upper bound is found to be {M:.2g}')
+            print('pdf(x) / q(x) upper bound:'.ljust(30) + f'{M:.2g}')
 
         # Drawing samples from p(x) using rejection sampling
         proposals = 0
@@ -214,11 +218,11 @@ def mci(function: Callable,
                     pbar.update(1)
         a_rate = n_samples / proposals
         if verbose:
-            print(f'{n_samples} samples are draws from PDF unisng rejection sampling with acceptance rate {a_rate:.3g}')
+            print('Acceptance rate:'.ljust(30) + f'{a_rate:.3g}')
             draws_desc = describe(draws)
-            print('Ranges: ' + str([f'({a:.3g}, {b:.3g})' for a, b in zip(draws_desc.minmax[0], draws_desc.minmax[1])]))
-            print(f'Mean(s): {draws_desc.mean}')
-            print(f'Variance(s): {draws_desc.variance}\n')
+            print('Ranges:'.ljust(30) + str([f'({a:.3g}, {b:.3g})' for a, b in zip(draws_desc.minmax[0], draws_desc.minmax[1])]))
+            print('Mean(s):'.ljust(30) + f'{draws_desc.mean}')
+            print('Variance(s):'.ljust(30) + f'{draws_desc.variance}\n')
     else:
         q_sample = lambda: sampling_function()
         if not (isinstance(q_sample(), Sequence) or isinstance(q_sample(), np.ndarray)):
@@ -243,11 +247,10 @@ def mci(function: Callable,
                     draws.append(sample)
                     pbar.update(1)
         if verbose:
-            print(f'{n_samples} samples are draws from the sampling function')
             draws_desc = describe(draws)
-            print('Ranges: ' + str([f'({a:.3g}, {b:.3g})' for a, b in zip(draws_desc.minmax[0], draws_desc.minmax[1])]))
-            print(f'Mean(s): {draws_desc.mean}')
-            print(f'Variance(s): {draws_desc.variance}\n')
+            print('Ranges:'.ljust(30) + str([f'({a:.3g}, {b:.3g})' for a, b in zip(draws_desc.minmax[0], draws_desc.minmax[1])]))
+            print('Mean(s):'.ljust(30) + f'{draws_desc.mean}')
+            print('Variance(s):'.ljust(30) + f'{draws_desc.variance}\n')
 
     #####################################
     # Monte Carlo Estimation
@@ -277,16 +280,17 @@ def mci(function: Callable,
     variance = np.var(f_values) / len(f_values)
     sd = np.std(f_values) / np.sqrt(len(f_values))
     if verbose:
-        print(f'Number of omitted samples: {n_samples - counter}')
-        print(f'Variance = {variance:.5g}')
-        print(f'SD = {sd:.5g}')
+        print('Number of omitted samples:'.ljust(30) + f'{n_samples - counter}')
+        print('Variance:'.ljust(30) + f'{variance:.5g}')
+        print('SD:'.ljust(30) + f'{sd:.5g}')
     final_estimator = mc_estimator[-1]
-    print(f'The final estimation = {final_estimator:.3g} ({final_estimator - 1.96 * sd:.5g} ... {final_estimator + 1.96 * sd:.5g}) p=0.05')
+    print('The final estimation:'.ljust(30) + f'{final_estimator:.3g}')
+    print('Confidence interval:'.ljust(30) + f'({final_estimator - 1.96 * sd:.5g} ... {final_estimator + 1.96 * sd:.5g}) p=0.05')
 
     # Using quadrature (scipy.integrate.nquad) as a reference vlue for comparison
     ref = nquad(function, domain)[0]
-    print(f'Reference value =  {ref:.5g}')
-    print(f'Error: {final_estimator - ref:.5g}')
+    print('Reference value'.ljust(30) + f'{ref:.5g}')
+    print('Error:'.ljust(30) + f'{final_estimator - ref:.5g}')
 
 
     #####################################
@@ -378,7 +382,6 @@ def mci(function: Callable,
             max_ = np.max([ref + range_ / 10, max_ + range_ / 10])
             delta = np.max([np.abs(ref - min_), np.abs(ref - max_)])
             limits = ref - delta, ref + delta
-            # limits = np.min([ref - range_ / 10, min_ - range_ / 10]), np.max([ref + range_ / 10, max_ + range_ / 10])
             data.append((i - 1, mc_estimator[i], limits))
 
         def init():

@@ -42,6 +42,53 @@ finding MC estimator and comparing to the Newton's-Côtes result.
 Visualization and animation are also possible.
 
 Example
+```python
+def f(x):
+  return np.sin(x) + np.cos(x)
+
+def pdf(x):
+  return 0.5 * x + 1 if x < 1 else 2.5 - x
+
+mci(f, pdf, [(0, 2)], n_samples=1000, plot=True, verbose=True)
+```
+```
+Task:
+Integrand:                      np.sin(x) + np.cos(x)
+Raw PDF:                       0.5 * x + 1 if x < 1 else 2.5 - x
+PDF validation required:      True
+Sampling function provided:   Not Provided
+Number of variables:          1
+Boundaries of integration:    [0, 2]
+Infinite domain:              False
+Number of samples:            1000
+Plotting option:              True
+Animation:                    False
+
+Checking PDF:
+PDF minimum:                  0.5001605215288005
+PDF integrates to:            2.25
+  it will be multiplied by:   0.444
+
+Rejection Sampling from PDF:
+Proposal (q(x)):              uniform
+pdf(x) / q(x) upper bound:    0.67
+Collecting draws from PDF: 100%|██████████| 1000/1000 [00:00<00:00, 239976.20it/s]
+Acceptance rate:              0.75
+Ranges:                       ['(8.62e-05, 2)']
+Mean(s):                      [0.90408331]
+Variance(s):                  [0.2872578]
+
+Monte Carlo estimation:
+Computing MC estimator: 100%|██████████| 1000/1000 [00:00<00:00, 412378.72it/s]
+Number of omitted samples:    0
+Variance:                     4.1791e-05
+SD:                           0.0064646
+The final estimation:         2.33
+Confidence interval:          (2.3136 ... 2.3389) p=0.05
+Reference value               2.3254
+Error:                        0.00080659
+```
+![3](https://github.com/user-attachments/assets/044db8f1-5067-4d10-82fb-9dccc083a6c2)
 
 ## Common dependecies
 

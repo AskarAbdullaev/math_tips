@@ -118,18 +118,36 @@ Created Task() or loaded Optimizer() have their custom representations (see exam
 
 Algorithms implemented:
 
+Step Search:
+- fixed step lengtg
+- backtracking
+- weak Wolfe conditions
+- strong Wolfe conditions
+- automatic step (based on previous step)
+
+Optimizers:
+
 - Steepest Decent
+
 - Newton method
-- Newton method with Hessian modification
-- QuasiNewton method SR1
-- QuasiNewton method DFP
-- QuasiNewton method BFGS
-- QuasiNewton method SR1 wth trust region
-- Conjugate Gradient Fletcher-Reeves (FR)
-- Conjugate Gradient Polak-Ribiere (PR)
-- Conjugate Gradient Hestenes-Stiefel (HS)
-- Conjugate Gradient Dai-Yuan (DY)
-- Conjugate Gradient (linear task)
+  - Newton method with Hessian modification
+
+- QuasiNewton
+  - QuasiNewton method SR1
+  - QuasiNewton method DFP
+  - QuasiNewton method BFGS
+  - QuasiNewton method SR1 wth trust region
+ 
+- Conjugate Gradient
+  - Conjugate Gradient Fletcher-Reeves (FR)
+  - Conjugate Gradient Polak-Ribiere (PR)
+  - Conjugate Gradient Hestenes-Stiefel (HS)
+  - Conjugate Gradient Dai-Yuan (DY)
+  - Conjugate Gradient (linear task)
+
+Additional:
+- 1D visualization
+- 2D visualization
 
 Example
 

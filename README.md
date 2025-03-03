@@ -1,4 +1,4 @@
-# math_tips
+# numerical_algorithms
 
 Some math functions which I found interesting to implement. Mostly about Calculus and Optimization.
 
@@ -89,6 +89,134 @@ Reference value               2.3254
 Error:                        0.00080659
 ```
 ![3](https://github.com/user-attachments/assets/044db8f1-5067-4d10-82fb-9dccc083a6c2)
+
+
+
+## unconstrained_optimization
+
+Attempt to implement the most basic optimization algorithms. The implementation is completely
+based on the famous textbook:
+```
+Nocedal, J., & Wright, S. J. (2006). Numerical optimization. In Springer Series in Operations
+Research and Financial Engineering (pp. 1-664). (Springer Series in Operations
+Research and Financial Engineering). Springer Nature.
+```
+
+Of course, there exist innumerable tools (including scipy state-of-art optimize function). The
+goal of this code is to trace step-by-step the process of unconstrained optimization,
+write down logs and intermediate computations. This approach results into fairly slow performance.
+
+At first a Task instance is created using a Callable or a string function, x0 - initial point (optional),
+x_min - true minimizers (optional), n_var - number of variables (optional), external_grad - gradient
+function (optional), external_hess - hessian function (optional).
+Optional arguments are replaced with automatically as much as possible.
+
+Secondly, an optimizer instance is created like Newton(), ConjugateGradient(), etc.
+Passing Task into Optimizer().optimize(Task) returns the found soltion and a dataframe of logs.
+
+Created Task() or loaded Optimizer() have their custom representations (see example).
+
+Algorithms implemented:
+
+- Steepest Decent
+- Newton method
+- Newton method with Hessian modification
+- QuasiNewton method SR1
+- QuasiNewton method DFP
+- QuasiNewton method BFGS
+- QuasiNewton method SR1 wth trust region
+- Conjugate Gradient Fletcher-Reeves (FR)
+- Conjugate Gradient Polak-Ribiere (PR)
+- Conjugate Gradient Hestenes-Stiefel (HS)
+- Conjugate Gradient Dai-Yuan (DY)
+- Conjugate Gradient (linear task)
+
+Example
+
+```python
+task = Task('100 * (x_1 - x_2^2)^2 + (1 - x_2)^2', x0=[2, 0])
+print(task)
+
+Newton_opt = Newton()
+QN_opt = QuasiNewton()
+CG_opt = ConjugateGradient()
+
+Newton_opt.optimize(task, modify_hessian=True)
+print(Newton_opt)
+
+QN_opt.optimize(task, algorithm='DFP')
+print(QN_opt)
+
+CG_opt.optimize(task, algorithm='PR')
+print(CG_opt)
+CG_opt.visualize2d()
+```
+
+```output
+----------------- TASK -----------------
+Function (string):            100 * (x[0] - x[1]**2)**2 + (1 - x[1])**2
+Number of variables:          2
+Initial point:                [2. 0.]
+True optimizers:              not provided
+Gradient:                     automatically
+Hessian:                      automatically
+----------------------------------------
+------------- OPTIMIZATION -------------
+Function                           100 * (x[0] - x[1]**2)**2 + (1 - x[1])**2
+Method                             :Newton
+Stop condition                     :Module of gradient = 1e-06
+Iter limit                         :100000
+Step length search                 :Wolfe
+   Mode                            :strong
+   Initial length                  :1
+   Constant c1                     :0.1
+   Constant c2                     :0.9
+Starting point                     :[2. 0.]
+Modify Hessian                     :True
+Status                             :Solved: ['1', '1']
+Runtime                            :0.8315s
+Iterations                         :8
+Last gradient module               :1.118e-08
+----------------------------------------
+------------- OPTIMIZATION -------------
+Function                           100 * (x[0] - x[1]**2)**2 + (1 - x[1])**2
+Method                             :Quasi Newton
+Stop condition                     :Module of gradient = 1e-06
+Iter limit                         :10000
+Step length search                 :Wolfe
+   Mode                            :strong
+   Initial length                  :1
+   Constant c1                     :0.1
+   Constant c2                     :0.9
+Starting point                     :[2. 0.]
+Algorithm                          :DFP
+Status                             :Solved: ['1', '1']
+Runtime                            :1.037s
+Iterations                         :11
+Last gradient module               :8.03e-08
+----------------------------------------
+------------- OPTIMIZATION -------------
+Function                           100 * (x[0] - x[1]**2)**2 + (1 - x[1])**2
+Method                             :Conjugate Gradient
+Stop condition                     :Module of gradient = 1e-06
+Iter limit                         :10000
+Step length search                 :Wolfe
+   Mode                            :strong
+   Initial length                  :1
+   Constant c1                     :0.1
+   Constant c2                     :0.9
+Starting point                     :[2. 0.]
+Algorithm                          :PR
+Status                             :Solved: ['1', '1']
+Runtime                            :1.333s
+Iterations                         :16
+Last gradient module               :2.854e-08
+----------------------------------------
+```
+![opt](https://github.com/user-attachments/assets/eef5b5ec-2606-4855-a064-e8d693d2f77f)
+
+
+
 
 ## Common dependecies
 

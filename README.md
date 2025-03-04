@@ -235,6 +235,262 @@ Last gradient module               :2.854e-08
 
 
 
+## community_analysis
+
+It is a tool which takes a graph as its adjacency matrix (plus optionally a dictionary of node names - if not, indices of adjacency matrix will be also the node names).
+
+After a Graph() instance is created, a lot of community analysis metrics and properties (both for the graph and individual nodes) can be extracted via the following methods
+
+  1. shortest_paths:
+        Searching for paths from node "_from" to the node "_to". (all shortest path are returned)
+        If there is no path: False is returned.
+
+  2. distance:
+        Returns the cost of the shortest path between 2 nodes.
+
+  3. is_complete:
+        Checks if every node is connected to every other node directly.
+
+  4. is_connected
+        Checks if every node is reachable from any other node.
+
+  5. is_regular:
+        Check if every node has the same number of adjacent edges.
+
+  6. is_weighted:
+        Checks if edges have different weights.
+
+  7. is_directed:
+        Checks if the adjacent matrix is symmetric.
+
+  8. is_moore:
+        Checks if the graph is Moore Bound.
+
+  9. is_acyclic:
+        Check if there are no cycles in the graph.
+
+  10. is_tree:
+        Checks if the graph can be called a tree (connected and acyclic).
+
+   11. diameter:
+        Returns the maximum shortest path.
+
+  12. eccentricity:
+        Returns the maximum distance from the given vertex to other vertices.
+
+  13. radius:
+        Returns the minimum eccentricity of all vertices.
+
+  14. average_distance_of_vertex:
+        Returns the average distance from the given vertex to every other vertex.
+
+  15. average_distance_of_graph:
+        Returns the mean of average distances of all vertices.
+
+  16. stress_centrality:
+        Returns the total number of shortest paths going through the given node.
+
+  17. betweenness_centrality:
+        Returns the sum of fractions of shortest paths between each pair of nodes (not containing the given one), which goes through the given node.
+
+  18. degree_centrality:
+        Returns the degree of a node.
+
+  19. k_hop_centrality:
+        Returns the number of nodes, which are reachable through k edges from the given one. (can be normalized)
+
+  20. k_rank_centrality:
+        Returns the rank of the given node among its own k-hop neighbours sorted according to their degrees.
+
+  21. closeness_centrality:
+        Returns 1 / sum of distances from the given node to every other node.
+
+  22. clustering_coefficient_of_vertex:
+        Returns the fraction of existing edges between the neighbours of the given node to the theoretically
+        maximum number of edges.
+
+  23. clustering_coefficient_of_graph:
+        Returns the mean of individual clustering coefficients of all vertices.
+
+  24. neighbourhood_overlap:
+        Returns the fraction of common neighbours to all the neighbours of the 2 given nodes.
+
+  25. minimum_spanning_tree:
+        Return the adjacency matrix of a minimum spanning tree constructed according to Prim-Jarnik or Kruskal's
+        algorithm.
+
+  26. summary:
+        Returns the report with main measures of the graph (not parametrizable).
+
+
+Methods describing individual nodes can usually be used with no node provided: in such a case a dictionary of individual metric for every node is returned.
+
+'summary' methods provided an overview of what information can be potentially extracted from Graph().
+
+Notice: the implementation is designed to be self-explainable and verbose. The efficiency was not a priority, so that the tool is made for rather compact, manually checkable graphs.
+
+Example:
+![graph](https://github.com/user-attachments/assets/9ca4f53e-48f2-467f-8023-5499d61c9150)
+
+```python
+matrix_1 = np.array(
+        [  # A, B, C, D, E, F, G
+            [0, 1, 1, 1, 0, 0, 1], # A
+            [1, 0, 1, 0, 0, 0, 0], # B
+            [1, 1, 0, 1, 0, 0, 0], # C
+            [1, 0, 1, 0, 1, 1, 1], # D
+            [0, 0, 0, 1, 0, 0, 0], # E
+            [0, 0, 0, 1, 0, 0, 0], # F
+            [1, 0, 0, 1, 0, 0, 0]  # G
+        ]
+    )
+
+names = {0: 'A', 1: 'B', 2: 'C', 3: 'D', 4: 'E', 5: 'F', 6: 'G'}
+
+g = Graph(matrix_1, names)
+print(g.summary())
+```
+
+```
+This graph:
+	 - is connected
+	 - is NOT regular
+	 - is NOT directed
+	 - is NOT weighted
+	 - is NOT complete
+	 - is NOT acyclic
+	 - is NOT a Moore graph
+	 - is NOT a Tree
+
+Main Measures:
+	 Diameter (geodesic) =   3
+	 Diameter (not geodesic) =   3
+	 Radius (geodesic) =   2
+	 Radius (not geodesic) =   2
+	 Average distance (geodesic) = 1.66667
+	 Average distance (not geodesic) = 1.66667
+	 Clustering coefficient = 0.480952
+
+Minimum Spanning Trees:
+by Prim-Jarnik:
+[[0 0 0 0 0 0 1]
+ [0 0 1 0 0 0 0]
+ [0 1 0 1 0 0 0]
+ [0 0 1 0 1 1 1]
+ [0 0 0 1 0 0 0]
+ [0 0 0 1 0 0 0]
+ [1 0 0 1 0 0 0]]
+
+by Kruskal:
+[[0 0 0 0 0 0 1]
+ [0 0 1 0 0 0 0]
+ [0 1 0 1 0 0 0]
+ [0 0 1 0 1 1 1]
+ [0 0 0 1 0 0 0]
+ [0 0 0 1 0 0 0]
+ [1 0 0 1 0 0 0]]
+
+Node Names: {0: 'A', 1: 'B', 2: 'C', 3: 'D', 4: 'E', 5: 'F', 6: 'G'}
+Eccentricity
+	of node "A" =   2
+	of node "B" =   3
+	of node "C" =   2
+	of node "D" =   2
+	of node "E" =   3
+	of node "F" =   3
+	of node "G" =   2
+
+Average Distance
+	of node "A" = 1.33333
+	of node "B" =   2
+	of node "C" = 1.5
+	of node "D" = 1.16667
+	of node "E" =   2
+	of node "F" =   2
+	of node "G" = 1.66667
+
+Degree Centrality
+	of node "A" =   4
+	of node "B" =   2
+	of node "C" =   3
+	of node "D" =   5
+	of node "E" =   1
+	of node "F" =   1
+	of node "G" =   2
+
+K-hop Centrality (k=2)
+	of node "A" =   6
+	of node "B" =   4
+	of node "C" =   6
+	of node "D" =   6
+	of node "E" =   5
+	of node "F" =   5
+	of node "G" =   6
+
+K-rank Centrality (k=2)
+	of node "A" =   2
+	of node "B" =   4
+	of node "C" =   3
+	of node "D" =   1
+	of node "E" =   5
+	of node "F" =   5
+	of node "G" =   4
+
+Closeness Centrality
+	of node "A" = 0.125
+	of node "B" = 0.0833333
+	of node "C" = 0.111111
+	of node "D" = 0.142857
+	of node "E" = 0.0833333
+	of node "F" = 0.0833333
+	of node "G" = 0.1
+
+Betweenness Centrality
+	of node "A" =   3
+	of node "B" =   0
+	of node "C" = 1.5
+	of node "D" = 9.5
+	of node "E" =   0
+	of node "F" =   0
+	of node "G" =   0
+
+Stress Centrality
+	of node "A" =   5
+	of node "B" =   0
+	of node "C" =   3
+	of node "D" =  12
+	of node "E" =   0
+	of node "F" =   0
+	of node "G" =   0
+
+Clustering Coefficient
+	of node "A" = 0.5
+	of node "B" =   1
+	of node "C" = 0.666667
+	of node "D" = 0.2
+	of node "E" =   0
+	of node "F" =   0
+	of node "G" =   1
+
+Examples of Neighbourhood Overlap:
+	of nodes "B and E" =   0
+	of nodes "B and F" =   0
+	of nodes "B and B" =   1
+	of nodes "E and C" = 0.333333
+	of nodes "D and C" = 0.2
+	of nodes "E and E" =   1
+	of nodes "D and D" =   1
+	of nodes "A and B" = 0.333333
+	of nodes "F and E" =   1
+	of nodes "B and G" = 0.333333
+
+Examples of Shortest Paths:
+	from D to G:  [D -> G (cost: 1)]
+	from B to E:  [B -> A -> D -> E (cost: 3), B -> C -> D -> E (cost: 3)]
+	from F to F:  [F (cost: 0)]
+	from F to B:  [F -> D -> A -> B (cost: 3), F -> D -> C -> B (cost: 3)]
+	from G to A:  [G -> A (cost: 1)]
+```
 
 ## Common dependecies
 

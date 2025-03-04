@@ -741,7 +741,14 @@ class Graph:
             node_1, node_2 = pairs[i]
             score = self.neighbourhood_overlap(node_1, node_2)
             report += f'\tof nodes "{self.node_names[node_1]} and {self.node_names[node_2]}" = {score:3g}\n'
-
+        
+        report += f'\nExamples of Shortest Paths:\n'
+        pairs = list(itertools.product(list(range(len(self.matrix))), list(range(len(self.matrix)))))
+        indices = np.random.choice(list(range(len(pairs))), 5)
+        for i in indices:
+            node_1, node_2 = pairs[i]
+            r = self.shortest_paths(node_1, node_2)
+            report += f'\tfrom {self.node_names[node_1]} to {self.node_names[node_2]}:  {r}\n'
 
         return report
 
